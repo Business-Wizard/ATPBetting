@@ -15,7 +15,7 @@ def xgbModelBinary(xtrain,ytrain,xval,yval,p,sample_weights=None):
     Early stopping is performed using xval and yval (validation set).
     Outputs the trained model, and the prediction on the validation set
     """
-    if sample_weights==None:
+    if sample_weights is None:
         dtrain=xgb.DMatrix(xtrain,label=ytrain)
     else:
         dtrain=xgb.DMatrix(xtrain,label=ytrain,weight=sample_weights)
@@ -110,10 +110,7 @@ def assessStrategyGlobal(test_beginning_match,
     right=(prediction_test_winner>prediction_test_loser).astype(int)
     ### For each match in the testing set, the confidence of the model in the outcome it chose
     def sel_match_confidence(x):
-        if x[0]>x[1]:
-            return x[0]/x[2] 
-        else:
-            return x[1]/x[3] 
+        return x[0]/x[2] if x[0]>x[1] else x[1]/x[3] 
     confidence=p.apply(lambda x:sel_match_confidence(x))
     
     ### The final confidence dataset 
@@ -168,10 +165,7 @@ def mer(t):
     # that chose this outcome.
     w=np.array([t[0],t[1],t[2],t[3],t[4],t[5],t[6]]).astype(bool)
     conf=np.array([t[7],t[8],t[9],t[10],t[11],t[12],t[13]])
-    if w.sum()>=4:
-        return 1,conf[w].mean()
-    else:
-        return 0,conf[~w].mean()
+    return (1, conf[w].mean()) if w.sum()>=4 else (0, conf[~w].mean())
 
 ############################### PROFITS COMPUTING AND VISUALIZATION ############
 
@@ -183,8 +177,16 @@ def profitComputation(percentage,confidence,model_name="0"):
     tot_number_matches=len(confidence)
     number_matches_we_bet_on=int(tot_number_matches*(percentage/100))
     matches_selection=confidence.head(number_matches_we_bet_on)
-    profit=100*(matches_selection.PSW[matches_selection["win"+model_name]==1].sum()-number_matches_we_bet_on)/number_matches_we_bet_on
-    return profit
+    return (
+        100
+        * (
+            matches_selection.PSW[
+                matches_selection[f'win{model_name}'] == 1
+            ].sum()
+            - number_matches_we_bet_on
+        )
+        / number_matches_we_bet_on
+    )
 
 def plotProfits(confidence,title=""):
     """

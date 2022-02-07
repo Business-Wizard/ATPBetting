@@ -41,9 +41,8 @@ def features_players_encoding(data):
         encod[i,winners[i]]+=1
     for i in range(len(losers)):
         encod[i,losers[i]]+=1
-    columns=["player_"+el for el in le.classes_]
-    players_encoded=pd.DataFrame(encod,columns=columns)
-    return players_encoded
+    columns = [f'player_{el}' for el in le.classes_]
+    return pd.DataFrame(encod,columns=columns)
 
 def features_tournaments_encoding(data):
     """
@@ -55,6 +54,5 @@ def features_tournaments_encoding(data):
     encod=np.zeros([len(tournaments),len(le.classes_)])
     for i in range(len(tournaments)):
         encod[i,tournaments[i]]+=1
-    columns=["tournament_"+el for el in le.classes_]
-    tournaments_encoded=pd.DataFrame(encod,columns=columns)
-    return tournaments_encoded
+    columns = [f'tournament_{el}' for el in le.classes_]
+    return pd.DataFrame(encod,columns=columns)

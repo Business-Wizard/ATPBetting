@@ -8,7 +8,6 @@
 
 import pickle
 def dump(obj,name):
-	pickle.dump(obj,open(name+'.p',"wb")) 
+	pickle.dump(obj, open(f'{name}.p', "wb")) 
 def load(name):
-	obj=pickle.load( open( name+".p", "rb" ) ) 
-	return obj
+	return pickle.load(open(f'{name}.p', "rb"))

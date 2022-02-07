@@ -32,8 +32,7 @@ def features_past_generation(features_creation_function,
         past_matches=data[(data.Date<match.Date)&(data.Date>=match.Date-datetime.timedelta(days=days))]
         match_features_outcome_1=features_creation_function(1,match,past_matches)
         match_features_outcome_2=features_creation_function(2,match,past_matches)
-        matches_outcomes.append(match_features_outcome_1)
-        matches_outcomes.append(match_features_outcome_2)
+        matches_outcomes.extend((match_features_outcome_1, match_features_outcome_2))
         if i%100==0:
             print(str(i)+"/"+str(len(indices))+" matches treated.")
     train=pd.DataFrame(matches_outcomes)
@@ -68,8 +67,8 @@ def features_recent_creation(outcome,match,past_matches):
     player=match.Winner if outcome==1 else match.Loser
     date=match.Date
     ##### Last matches
-    wins=past_matches[past_matches.Winner==player]    
-    losses=past_matches[past_matches.Loser==player]    
+    wins=past_matches[past_matches.Winner==player]
+    losses=past_matches[past_matches.Loser==player]
     todo=pd.concat([wins,losses],0)
     if len(todo)==0:
         return [np.nan]*7
@@ -90,8 +89,7 @@ def features_recent_creation(outcome,match,past_matches):
     else:
         ilm=np.nan
         iitp=np.nan
-    features_recent=[dslm,wlmw,rlpp,nslmp,nswlmp,ilm,iitp]
-    return features_recent
+    return [dslm,wlmw,rlpp,nslmp,nswlmp,ilm,iitp]
 
 def features_duo_creation(outcome,match,past):
     features_duo=[]
